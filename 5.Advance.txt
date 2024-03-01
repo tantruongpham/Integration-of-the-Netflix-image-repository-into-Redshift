@@ -1,0 +1,48 @@
+1. SSIS Package
+------ Build started: Project: Depx304_ASM3_ETL-Netflix, Configuration: Development ------
+Build started: SQL Server Integration Services project: Incremental ...
+Starting project consistency check ...
+Project consistency check completed. The project is consistent.
+File 'C:\Users\MSI\Desktop\DE\AWS\ASM3\Depx304_ASM3_ETL-Netflix\Depx304_ASM3_ETL-Netflix\obj\Development\Package.dtsx' get updated.
+Applied active configuration to 'Package.dtsx'.
+Depx304_ASM3_ETL-Netflix -> C:\Users\MSI\Desktop\DE\AWS\ASM3\Depx304_ASM3_ETL-Netflix\Depx304_ASM3_ETL-Netflix\bin\Development\Depx304_ASM3_ETL-Netflix.ispac
+Build complete -- 0 errors, 0 warnings
+========== Build: 1 succeeded or up-to-date, 0 failed, 0 skipped ==========
+========== Build started at 6:09 PM and took 01.019 seconds ==========
+Tổng cộng 1.19 s
+2. SQL-Procedure on local SQL Server Managemant 
+ASM3_DataWarehouse> EXECUTE LOAD_DIM_COUNTRY;
+                    EXECUTE LOAD_DIM_DATE;
+                    EXECUTE LOAD_DIM_DIRECTOR;
+                    EXECUTE LOAD_DIM_DURATION;
+                    EXECUTE LOAD_DIM_INFO;
+                    EXECUTE LOAD_DIM_RATING;
+                    EXECUTE LOAD_DIM_TYPE;
+                    EXECUTE LOAD_FACT_NETFLIX_SHOWS;
+[2023-12-14 18:05:32] 40 rows affected in 3.29s ms
+=> Tổng cộng 3.29s ms 
+3. SQL-Procedure on Redshift 
+> Call asm3_datawarehouse_dbo.load_dim_country(1)
+[2023-12-14 17:56:49] 1 row retrieved starting from 1 in 568 ms (execution: 542 ms, fetching: 26 ms)
+> Call asm3_datawarehouse_dbo.load_dim_date(1)
+[2023-12-14 17:56:55] 1 row retrieved starting from 1 in 5 s 898 ms (execution: 5 s 873 ms, fetching: 25 ms)
+> Call asm3_datawarehouse_dbo.load_dim_director(1)
+[2023-12-14 17:56:55] 1 row retrieved starting from 1 in 289 ms (execution: 263 ms, fetching: 26 ms)
+> Call asm3_datawarehouse_dbo.load_dim_duration(1)
+[2023-12-14 17:56:56] 1 row retrieved starting from 1 in 309 ms (execution: 260 ms, fetching: 49 ms)
+> Call asm3_datawarehouse_dbo.load_dim_info(1)
+[2023-12-14 17:57:02] 1 row retrieved starting from 1 in 6 s 96 ms (execution: 6 s 69 ms, fetching: 27 ms)
+> Call asm3_datawarehouse_dbo.load_dim_rating(1)
+[2023-12-14 17:57:02] 1 row retrieved starting from 1 in 293 ms (execution: 269 ms, fetching: 24 ms)
+> Call asm3_datawarehouse_dbo.load_dim_type(1)
+[2023-12-14 17:57:03] 1 row retrieved starting from 1 in 295 ms (execution: 269 ms, fetching: 26 ms)
+> Call asm3_datawarehouse_dbo.load_fact_netflix_shows(1)
+[2023-12-14 17:57:21] 1 row retrieved starting from 1 in 18 s 101 ms (execution: 18 s 14 ms, fetching: 87 ms)
+ => Tổng cộng 27 s. 
+
+Nhận xét: Cùng một tệp dữ liệu, tốc độ thực hiện ETL tăng dần theo:   SSIS trên Local < T-SQL trên local SSMS < SQL-Procedure trên Redshift 
+Vì: - 
+1. Cấu hình trên máy Local (I7-16gb ram) mạnh hơn cấu hình d2.large trên Redshift nên Local xử lý nhanh hơn, ngoài ra còn phụ thuộc vào tốc độ đường truyền Internet kết nối đến Redshift
+2. Tệp dữ liệu nhỏ nên chưa thấy sự khác biệt cấu trúc xử lý song song của Redshift 
+3. So sánh với SSIS và SSMS, vì thao tác Load vào bảng fact của SQL - Procedure phải thực hiện Join các bảng Dim nên sẽ xử lý lâu hơn SSIS
+ 

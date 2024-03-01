@@ -1,0 +1,4 @@
+Endpoint: redshift-cluster-1.cukvjjxorfcx.ap-southeast-1.redshift.amazonaws.com:5439/dev
+user: Admin 
+password: Depx304asm3 
+database: dev

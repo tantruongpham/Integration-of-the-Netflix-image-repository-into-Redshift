@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{C9674DCB-5085-4A16-B785-4C70DD1589BD}") = "Depx304_ASM3_ETL-Netflix", "Depx304_ASM3_ETL-Netflix\Depx304_ASM3_ETL-Netflix.dtproj", "{C24A2070-E796-45A7-AC8E-FBD8D066E4E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C24A2070-E796-45A7-AC8E-FBD8D066E4E3}.Development|Default.ActiveCfg = Development
+		{C24A2070-E796-45A7-AC8E-FBD8D066E4E3}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE0A2730-5536-48CC-93EE-D44A62D5FC4C}
+	EndGlobalSection
+EndGlobal

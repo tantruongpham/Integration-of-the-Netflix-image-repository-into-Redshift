@@ -1,0 +1,76 @@
+1. Create a table to store sources within the ASM3_SOURCE databases.
+use ASM3_Source;
+CREATE TABLE netflix_titles (
+    show_id INT,
+    type VARCHAR(255),
+    title NVARCHAR(255),
+    director NVARCHAR(255),
+    cast NVARCHAR(2000),
+    country VARCHAR(255),
+    date_added VARCHAR(255),
+    release_year VARCHAR(255),
+    rating VARCHAR(255),
+    duration VARCHAR(255),
+    listed_in NVARCHAR(255),
+    description NVARCHAR(1000)
+);
+
+2. Creat a star schema within the ASM3_DataWarehouse databases. 
+
+use ASM3_DataWarehouse;
+CREATE TABLE DIM_COUNTRY(
+    country_id INT IDENTITY(1,1) PRIMARY KEY,
+    country VARCHAR(255)
+);
+
+CREATE TABLE DIM_DIRECTOR(
+    director_id INT IDENTITY(1,1) PRIMARY KEY,
+    director NVARCHAR(255)
+);
+
+CREATE TABLE DIM_DATE(
+    date_id INT IDENTITY(1,1) PRIMARY KEY,
+    date_added VARCHAR(255),
+    release_year VARCHAR(255)
+);
+
+CREATE TABLE DIM_RATING(
+    rating_id INT IDENTITY(1,1) PRIMARY KEY,
+    rating VARCHAR(255)
+);
+
+CREATE TABLE DIM_DURATION(
+    duration_id INT IDENTITY(1,1) PRIMARY KEY,
+    duration VARCHAR(255)
+);
+
+CREATE TABLE DIM_INFO(
+    info_id INT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(255),
+    listed_in NVARCHAR(255),
+    description NVARCHAR(1000),
+    cast NVARCHAR(2000)
+);
+
+CREATE TABLE DIM_TYPE(
+    type_id INT IDENTITY(1,1) PRIMARY KEY,
+    type VARCHAR(255)
+);
+
+CREATE TABLE FACT_NETFLIX_SHOWS(
+    show_id INT,
+    info_id INT,
+    type_id INT,
+    director_id INT,
+    country_id INT,
+    date_id INT,
+    rating_id INT, 
+    duration_id INT,
+    FOREIGN KEY (info_id) REFERENCES DIM_INFO(info_id),
+    FOREIGN KEY (type_id) REFERENCES DIM_TYPE(type_id),
+    FOREIGN KEY (director_id) REFERENCES DIM_DIRECTOR(director_id),
+    FOREIGN KEY (country_id) REFERENCES DIM_COUNTRY(country_id),
+    FOREIGN KEY (date_id) REFERENCES DIM_DATE(date_id),
+    FOREIGN KEY (rating_id) REFERENCES DIM_RATING(rating_id),
+    FOREIGN KEY (duration_id) REFERENCES DIM_DURATION(duration_id)
+);

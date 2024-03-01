@@ -1,0 +1,128 @@
+use ASM3_DataWarehouse;
+-- Load dữ liệu từ bảng netflix_titles vào DIM_INFO với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_INFO
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_INFO (title, listed_in, description, cast)
+    SELECT DISTINCT title, listed_in, description, cast
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_INFO dim
+        WHERE dim.title = source.title
+        AND dim.listed_in = source.listed_in
+        AND dim.description = source.description
+        AND dim.cast = source.cast
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_TYPE với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_TYPE
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_TYPE (type)
+    SELECT DISTINCT source.type
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_TYPE dim
+        WHERE dim.type = source.type
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_DIRECTOR với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_DIRECTOR
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_DIRECTOR (director)
+    SELECT DISTINCT source.director
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_DIRECTOR dim
+        WHERE dim.director = source.director
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_COUNTRY với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_COUNTRY
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_COUNTRY (country)
+    SELECT DISTINCT source.country
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_COUNTRY dim
+        WHERE dim.country = source.country
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_DATE với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_DATE
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_DATE (date_added, release_year)
+    SELECT DISTINCT source.date_added, source.release_year
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_DATE dim
+        WHERE dim.date_added = source.date_added AND dim.release_year = source.release_year
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_RATING với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_RATING
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_RATING (rating)
+    SELECT DISTINCT source.rating
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_RATING dim
+        WHERE dim.rating = source.rating
+    );
+END
+
+-- Load dữ liệu từ bảng netflix_titles vào DIM_DURATION với kiểm tra dữ liệu trùng lặp
+CREATE OR ALTER PROCEDURE LOAD_DIM_DURATION
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.DIM_DURATION (duration)
+    SELECT DISTINCT source.duration
+    FROM ASM3_Source.dbo.netflix_titles source
+    WHERE NOT EXISTS (
+        SELECT 1 FROM ASM3_DataWarehouse.dbo.DIM_DURATION dim
+        WHERE dim.duration = source.duration
+    );
+END
+
+-- Load dữ liệu vào FACT_NETFLIX_SHOWS từ các bảng dimension
+CREATE OR ALTER PROCEDURE LOAD_FACT_NETFLIX_SHOWS
+AS
+BEGIN
+    INSERT INTO ASM3_DataWarehouse.dbo.FACT_NETFLIX_SHOWS (show_id, info_id, type_id, director_id, country_id, date_id, rating_id, duration_id)
+    SELECT
+        nt.show_id,
+        di.info_id,
+        dt.type_id,
+        dd.director_id,
+        dc.country_id,
+        ddt.date_id,
+        dr.rating_id,
+        ddu.duration_id
+    FROM ASM3_Source.dbo.netflix_titles nt
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_INFO di ON nt.title = di.title AND nt.cast = di.cast AND nt.description = di.description AND nt.listed_in = di.listed_in
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_TYPE dt ON nt.type = dt.type
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_DIRECTOR dd ON nt.director = dd.director
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_COUNTRY dc ON nt.country = dc.country
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_DATE ddt ON nt.date_added = ddt.date_added AND nt.release_year = ddt.release_year
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_RATING dr ON nt.rating = dr.rating
+    LEFT JOIN ASM3_DataWarehouse.dbo.DIM_DURATION ddu ON nt.duration = ddu.duration
+END
+
+
+EXECUTE LOAD_DIM_COUNTRY;
+EXECUTE LOAD_DIM_DATE;
+EXECUTE LOAD_DIM_DIRECTOR;
+EXECUTE LOAD_DIM_DURATION;
+EXECUTE LOAD_DIM_INFO;
+EXECUTE LOAD_DIM_RATING;
+EXECUTE LOAD_DIM_TYPE;
+EXECUTE LOAD_FACT_NETFLIX_SHOWS;
